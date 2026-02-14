@@ -8,13 +8,26 @@
         margin: 0;
         padding: 0;
       }
+      /* 背景を動かさないために body を固定 */
+      body{
+        overflow: hidden;
+        height: 100vh;
+      }
+      /* コンテンツだけスクロールさせる */
+      #content{
+        position: relative;
+        height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
       #bg-iframe{
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         z-index: -1; /* 背景に配置 */
+        pointer-events: none;
       }
       h1,h2 {
         margin-top: 20px;
@@ -142,7 +155,8 @@
 
                 const daysInMonth = new Date(date.getFullYear(), month, 0).getDate();
                 const firstDay = new Date(date.getFullYear(), month, 1).getDay();
-                const daysInPrevMonth = new Date(date.getFullYear(), month, 0).getDate();                let dayCount = 1;
+                const daysInPrevMonth = new Date(date.getFullYear(), month, 0).getDate();
+                let dayCount = 1;
                 let prevDayCount = daysInMonth - firstDay + 1;
 
                 for (let i = 0; i < 5; i++) {
@@ -209,14 +223,11 @@
       id="bg-iframe"
       src="https://www.youtube.com/embed/8xtKZjnq-AA?enablejsapi=1&loop=1&playlist=8xtKZjnq-AA"
       allow="accelerometer; autoplay; encrypted-media; gyroscope;";
-      frameborder="0" ></iframe>
-    <div style="
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: transparent;">
+      frameborder="0" >
+    </iframe>
+    <div id="content">
+      <div id="margin"></div>
+      <div id="calendar" class="calendar-wrap">
     </div>
-    <div id="margin"></div>
-    <div id="calendar" class="calendar-wrap"></div>
   </body>
 </html>

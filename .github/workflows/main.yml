@@ -16,4 +16,4 @@ jobs:
       - name: Run Node with secret
         env:
           API_KEY: ${{ secrets.API_KEY }}
-        run: node app.js
+        run: node index.js

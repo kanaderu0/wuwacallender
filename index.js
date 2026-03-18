@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_KEY = import.meta.env.VITE_API_KEY;
+    const API_KEY = process.env.API_KEY;
     const CHANNEL_ID = "UCGc93NguHRwzv1Rw9MyIcxQ";
 
     // keywords: ["AAA", "BBB"]

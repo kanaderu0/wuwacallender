@@ -1,51 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_KEY = process.env.API_KEY;
-    const CHANNEL_ID = "UCGc93NguHRwzv1Rw9MyIcxQ";
-
-    // keywords: ["AAA", "BBB"]
-    // mode: "AND" または "OR"
-    async function getLatestVideoUrl(keywords = [], mode = "OR") {
-        const url = new URL("https://www.googleapis.com/youtube/v3/search");
-        url.searchParams.set("key", API_KEY);
-        url.searchParams.set("channelId", CHANNEL_ID);
-        url.searchParams.set("part", "snippet");
-        url.searchParams.set("order", "date");
-        url.searchParams.set("maxResults", "20");
-        url.searchParams.set("type", "video");
-
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!data.items) return null;
-
-        const filtered = data.items.filter(item => {
-        const title = item.snippet.title || "";
-        const desc = item.snippet.description || "";
-        const text = title + " " + desc;
-
-        if (mode === "AND") {
-            // 全キーワードを含む
-            return keywords.every(kw => text.includes(kw));
-        } else {
-            // どれか1つでも含む
-            return keywords.some(kw => text.includes(kw));
-        }
-        });
-
-        if (filtered.length === 0) return null;
-
-        // search API は最新順なので先頭が最新
-        const latest = filtered[0];
-        return `https://www.youtube.com/embed/${latest.id.videoId}?enablejsapi=1&loop=1&playlist=${latest.id.videoId}`;
-    }
-
     async function createiframe(){
         const content = document.getElementById("content");
-
         const iframe = document.createElement("iframe");
+        const res = await fetch('https://wuwacallender.vercel.app/api/youtube?keywords=Ver,PV&mode=AND');
+        const data = await res.json();
 
         iframe.id = "bg-iframe";
-        iframe.src = await getLatestVideoUrl(["Ver", "PV"], "AND");
+        iframe.src = await data.url;
         iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope;";
         iframe.frameBorder = 0;
 

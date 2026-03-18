@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="script.js"></script>
     <style>
+      /* cssリセット */
       *{
         margin: 0;
         padding: 0;
       }
       /* 背景を動かさないために body を固定 */
       body{
-        overflow: hidden;
+        width: 100%;
         height: 100vh;
       }
       /* コンテンツだけスクロールさせる */
@@ -19,6 +21,9 @@
         height: 100vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+      }
+      #content::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
       }
       #bg-iframe{
         position: absolute;
@@ -29,21 +34,45 @@
         z-index: -1; /* 背景に配置 */
         pointer-events: none;
       }
+      /* 上に置くコンテンツ */
+      h1,#nowyear{
+        z-index: 1;
+      }
       h1,h2 {
-        margin-top: 20px;
         font-size: 30px;
         color: #0094ff;
       }
       h1{
         position: fixed;
-        top: -10px;
-        left: 20px;
-        font-size: calc(var(--vh) * 4);
+        font-size: clamp(18px, 2vw, 22px);
+        bottom: 15px;
+        right: 80px;
+      }
+      @media screen and (max-width: 768px){
+        h1{
+          bottom: 10px;
+          right: 10px;
+        }
       }
       h2{
-        font-size: 50px;
+        margin-top: 100px;
+        font-size: clamp(30px, 3vw, 50px);
         text-align: center;
         color: #0094ff;
+      }
+      /* PC用 */
+      #nowyear{
+        position: fixed;
+        font-size: clamp(30px, 4vw, 40px);
+        font-weight: bold;
+        top: 5px;
+        left: 20px;
+        color: #0094ff;
+      }
+      /* PC用 */
+      .month{
+        font-size: clamp(50px, 6vw, 70px);
+        padding-right: 0.15em;
       }
       #margin{
         margin-bottom: 100px;
@@ -88,143 +117,10 @@
         background-color: white;
       }
     </style>
-    <script>
-        let ytStatus = "stop";
-
-        window.onload = function(){
-            const video = document.getElementById('video');
-            const iframe = document.getElementById('bg-iframe');
-
-            // ユーザー操作後に再生
-            document.addEventListener('click', () => {
-              if(ytStatus === "stop"){
-                ytStatus = "play";
-                iframe.contentWindow.postMessage(
-                  JSON.stringify({
-                      event: "command",
-                      func: "playVideo",
-                      args: []
-                  }),
-                  "*"
-                );
-              }else{
-                ytStatus = "stop";
-                iframe.contentWindow.postMessage(
-                JSON.stringify({
-                    event: "command",
-                    func: "pauseVideo",
-                    args: []
-                }),
-                "*"
-                )
-              };
-              // video.muted = false; // 音声ON
-              // video.volume = 1;
-              // video.play();
-            });
-
-            const date = new Date();
-            const today = date.getDate();
-            const currentMonth = date.getMonth() + 1;
-
-            function createCalendar(month) {
-                const monthDays = ["日", "月", "火", "水", "木", "金", "土"];
-                let calendarHTML;
-                if(currentMonth === month){
-                  calendarHTML = `
-                  <h2 id="nowMonth">${month}月</h2>
-                  <table class="calendar"><tr>
-                  `;
-                }else{
-                  calendarHTML = `
-                  <h2>${month}月</h2>
-                  <table class="calendar"><tr>
-                  `;
-                }
-                for (let i = 0; i < 7; i++) {
-                    if (i === 0) {
-                        calendarHTML += `<th class="sun">${monthDays[i]}</th>`;
-                    } else if (i === 6) {
-                        calendarHTML += `<th class="sat">${monthDays[i]}</th>`;
-                    } else {
-                        calendarHTML += `<th>${monthDays[i]}</th>`;
-                    }
-                }
-
-                calendarHTML += '</tr><tbody>';
-
-                const daysInMonth = new Date(date.getFullYear(), month, 0).getDate();
-                const firstDay = new Date(date.getFullYear(), month, 1).getDay();
-                const daysInPrevMonth = new Date(date.getFullYear(), month, 0).getDate();
-                let dayCount = 1;
-                let prevDayCount = daysInMonth - firstDay + 1;
-
-                for (let i = 0; i < 5; i++) {
-                    calendarHTML += '<tr>';
-
-                    for (let j = 0; j < 7; j++) {
-                        if (i === 0 && j < firstDay) {
-                            calendarHTML += `<td class="mute">${prevDayCount}</td>`;
-                            prevDayCount++;
-                        } else if (dayCount > daysInMonth) {
-                            let nextMonthDayCount = dayCount - daysInMonth;
-                            calendarHTML += `<td class="mute">${nextMonthDayCount}</td>`;
-                            dayCount++;
-                        } else {
-                            // 今日の日付にclassを付ける
-                            if (dayCount === today && month === currentMonth) {
-                                calendarHTML += `<td id="today">${dayCount}</td>`;
-                            } 
-                            // 月曜日にclassを付ける
-                            else if (j === 1) {
-                                calendarHTML += `<td class="off">${dayCount}</td>`;
-                            }else if (month == currentMonth && i==1 && j==4){
-                                calendarHTML += `<td id="center">${dayCount}</td>`;
-                            }else {
-                                calendarHTML += `<td>${dayCount}</td>`;
-                            }
-                            dayCount++;
-                        }
-                    }
-
-                    calendarHTML += '</tr>';
-
-                    if (dayCount - daysInMonth > 7) {
-                        break;
-                    }
-                }
-
-                calendarHTML += '</tbody></table>';
-
-                return calendarHTML;
-            }
-            for(let i=1; i<13; i++){
-              document.getElementById('calendar').innerHTML += createCalendar(i);
-                if(i == 12){
-                  document.getElementById("center").scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                  });
-                }
-            }
-          }
-
-          function setVh(){
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`); 
-          } 
-          setVh();
-          window.addEventListener('resize', setVh);
-    </script>
   </head>
   <body>
+    <p id="nowyear"></p>
     <h1>鳴潮カレンダー</h1>
-    <iframe 
-      id="bg-iframe"
-      src="https://www.youtube.com/embed/8xtKZjnq-AA?enablejsapi=1&loop=1&playlist=8xtKZjnq-AA"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope;";
-      frameborder="0" >
-    </iframe>
     <div id="content">
       <div id="margin"></div>
       <div id="calendar" class="calendar-wrap">

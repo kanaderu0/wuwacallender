@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function createiframe(){
         const content = document.getElementById("content");
         const iframe = document.createElement("iframe");
-        const res = await fetch('https://wuwacallender.vercel.app/api/youtube?keywords=Ver,PV&mode=AND');
-        const data = await res.json();
-
+        const res = await fetch('/api/getVideo');
+        const data = await res.json()
+        
         iframe.id = "bg-iframe";
         iframe.src = await data.url;
         iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope;";

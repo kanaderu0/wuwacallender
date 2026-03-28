@@ -1,10 +1,13 @@
+export const config = {
+  runtime: "edge"
+};
+
 import { kv } from "@vercel/kv";
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   const API_KEY = process.env.API_KEY;
   const CHANNEL_ID = "UCGc93NguHRwzv1Rw9MyIcxQ";
 
-  // ① アップロード動画リストを取得
   async function getUploadsPlaylistId() {
     const url = new URL("https://www.googleapis.com/youtube/v3/channels");
     url.searchParams.set("key", API_KEY);
@@ -16,7 +19,6 @@ export default async function handler(req, res) {
     return d.items?.[0]?.contentDetails?.relatedPlaylists?.uploads || null;
   }
 
-  // ② 全動画を取得
   async function getAllVideos(playlistId) {
     let videos = [];
     let nextPageToken = "";
@@ -40,7 +42,6 @@ export default async function handler(req, res) {
     return videos;
   }
 
-  // ③ 最新動画を判定
   function getLatest(videos) {
     videos.sort((a, b) =>
       new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt)
@@ -48,7 +49,6 @@ export default async function handler(req, res) {
     return videos[0];
   }
 
-  // 実行
   const playlistId = await getUploadsPlaylistId();
   const videos = await getAllVideos(playlistId);
   const latest = getLatest(videos);
@@ -56,8 +56,9 @@ export default async function handler(req, res) {
   const videoId = latest.snippet.resourceId.videoId;
   const url = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}`;
 
-  // ④ KV に保存
   await kv.set("latestVideoUrl", url);
 
-  res.status(200).json({ saved: url });
+  return new Response(JSON.stringify({ saved: url }), {
+    headers: { "Content-Type": "application/json" }
+  });
 }

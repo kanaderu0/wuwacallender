@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const iframe = document.createElement("iframe");
         const res = await fetch('https://wuwacallender.vercel.app/api/getVideo');
         const data = await res.json();
-        const videoId = await data.url;
+        const videoId = await data.videoId;
         
         iframe.id = "bg-iframe";
         iframe.src = `https://www.youtube.com/embed/${videoId}?modestbranding=1&playlist=${videoId}&loop=1&enablejsapi=1&rel=0&controls=0`;

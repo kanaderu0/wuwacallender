@@ -80,11 +80,10 @@ export default async function handler(req) {
   }
 
   const videoId = latest.snippet.resourceId.videoId;
-  const url = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}`;
 
-  await kv.set("latestVideoUrl", url);
+  await kv.set("latestVideoId", videoId);
 
-  return new Response(JSON.stringify({ saved: url }), {
+  return new Response(JSON.stringify({ saved: videoId }), {
     headers: { "Content-Type": "application/json" }
   });
 }

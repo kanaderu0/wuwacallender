@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = document.getElementById("content");
         const iframe = document.createElement("iframe");
         const res = await fetch('https://wuwacallender.vercel.app/api/getVideo');
-        const data = await res.json()
+        const data = await res.json();
+        const videoId = await data.url;
         
         iframe.id = "bg-iframe";
-        iframe.src = await data.url;
-        iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope;";
+        iframe.src = `https://www.youtube.com/embed/${videoId}?modestbranding=1&playlist=${videoId}&loop=1&enablejsapi=1&rel=0&controls=0`;
+        iframe.allow = "autoplay; encrypted-media; fullscreen";
         iframe.frameBorder = 0;
 
         content.parentNode.insertBefore(iframe, content);
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // ユーザー操作後に再生
             document.addEventListener('click', () => {
+                console.log(ytStatus);
                 if(ytStatus === "stop"){
                 ytStatus = "play";
                 iframe.contentWindow.postMessage(

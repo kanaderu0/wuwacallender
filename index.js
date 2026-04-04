@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function createiframe(){
         const content = document.getElementById("content");
         const iframe = document.createElement("iframe");
-        const res = await fetch('/api/getVideo');
+        const res = await fetch('https://wuwacallender.vercel.app/api/getVideo');
         const data = await res.json()
         
         iframe.id = "bg-iframe";

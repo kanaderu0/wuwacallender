@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/updateVideo",
-      "schedule": "20 50 * * *"
+      "schedule": "50 20 * * *"
     }
   ]
 }

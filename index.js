@@ -71,14 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function createCalendar(month) {
         const monthDays = ["日", "月", "火", "水", "木", "金", "土"];
         let calendarHTML;
+        let prevMonth = month + 1;
         if(currentMonth === month){
             calendarHTML = `
-            <h2 id="nowMonth"><span class='month'>${month}</span>月</h2>
+            <h2 id="nowMonth"><span class='month'>${prevMonth}</span>月</h2>
             <table class="calendar"><tr>
             `;
         }else{
             calendarHTML = `
-            <h2><span class='month'>${month}</span>月</h2>
+            <h2><span class='month'>${prevMonth}</span>月</h2>
             <table class="calendar"><tr>
             `;
         }
@@ -112,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     dayCount++;
                 } else {
                     // 今日の日付にclassを付ける
-                    if (dayCount === today && month === currentMonth) {
+                    if (dayCount === today && month === nowMon) {
                         calendarHTML += `<td id="today">${dayCount}</td>`;
                     } 
                     // 月曜日にclassを付ける
@@ -138,9 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return calendarHTML;
     }
-    for(let i=1; i<13; i++){
+    for(let i=0; i<12; i++){
         document.getElementById('calendar').innerHTML += createCalendar(i);
-        if(i == 12){
+        console.log(i);
+        if(i == 11){
         const elements = document.querySelectorAll(".center");
 
         elements[nowMon].scrollIntoView({
@@ -206,17 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function scrollPage(direction){
         const elements = document.querySelectorAll(".center");
         if(nowMon > 0 && nowMon < 11 || nowMon == 0 && direction == 1 || nowMon == 11 && direction == -1){
-        nowMon = nowMon + direction;
+            nowMon = nowMon + direction;
         }
-
-        console.log(nowMon);
-        console.log(direction);
-
         elements[nowMon].scrollIntoView({
-        behavior: "smooth",
-        block: "center"
+            behavior: "smooth",
+            block: "center"
         });
-
         // アニメーションが終わるまで待機
         setTimeout(() => { isScrolling = false; }, 100);
     }

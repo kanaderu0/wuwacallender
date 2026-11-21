@@ -14,15 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
         content.parentNode.insertBefore(iframe, content);
 
         iframe.addEventListener('load', () => {
-            let ytStatus = "stop";
-            const video = document.getElementById('video');
             const iframe = document.getElementById('bg-iframe');
 
-            // ユーザー操作後に再生
+            // ユーザー操作後に一度だけ再生
             document.addEventListener('click', () => {
-                console.log(ytStatus);
-                if(ytStatus === "stop"){
-                ytStatus = "play";
                 iframe.contentWindow.postMessage(
                     JSON.stringify({
                         event: "command",
@@ -31,21 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }),
                     "*"
                 );
-                }else{
-                ytStatus = "stop";
-                iframe.contentWindow.postMessage(
-                JSON.stringify({
-                    event: "command",
-                    func: "pauseVideo",
-                    args: []
-                }),
-                "*"
-                )
-                };
-                // video.muted = false; // 音声ON
-                // video.volume = 1;
-                // video.play();
-            });
+            }, { once: true });
         });
     }
 

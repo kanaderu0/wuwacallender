@@ -8,6 +8,7 @@
     <style>
       /* cssリセット */
       *{
+        overflow: hidden;
         margin: 0;
         padding: 0;
       }
@@ -36,8 +37,16 @@
         pointer-events: none;
       }
       /* 上に置くコンテンツ */
-      h1,#nowyear{
+      header{
+        position: fixed;
         z-index: 1;
+      }
+      #audio{
+        position: fixed;
+        width: 50px;
+        top: 35px;
+        right: 10px;
+        filter: brightness(0) invert(1);
       }
       h1 {
         position: fixed;
@@ -52,6 +61,7 @@
         text-align: center;
         color: #0094ff;
       }
+
       /* PC用 */
       #nowyear{
         position: fixed;
@@ -111,8 +121,11 @@
     </style>
   </head>
   <body>
-    <p id="nowyear"></p>
-    <h1>鳴潮カレンダー</h1>
+    <header>
+      <p id="nowyear"></p>
+      <h1>鳴潮カレンダー</h1>
+      <img id="audio" src="img/audio/speaker.svg" alt="音声ON">
+    </header>
     <div id="content">
       <div id="margin"></div>
       <div id="calendar" class="calendar-wrap">

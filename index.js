@@ -5,28 +5,93 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('https://wuwacallender.vercel.app/api/getVideo');
         const data = await res.json();
         const videoId = await data.videoId;
+        const clickSound = new Audio("audio/button/click.mp3");
         
         iframe.id = "bg-iframe";
         iframe.src = `https://www.youtube.com/embed/${videoId}?modestbranding=1&playlist=${videoId}&loop=1&enablejsapi=1&rel=0&controls=0`;
         iframe.allow = "autoplay; encrypted-media; fullscreen";
-        iframe.frameBorder = 0;
 
         content.parentNode.insertBefore(iframe, content);
 
-        iframe.addEventListener('load', () => {
-            const iframe = document.getElementById('bg-iframe');
+        // 最初は音声ONの状態
+        let isMuted = false;
 
-            // ユーザー操作後に一度だけ再生
+        // 最初のクリックで動画を再生
+        let videoStarted = false;
+
+        // スピーカーボタン
+        const audioButton = document.getElementById('audio');
+
+        // iframe読み込み後
+        iframe.addEventListener('load', () => {
+
+            // 最初のクリックで動画を再生
             document.addEventListener('click', () => {
+
+                if (videoStarted) return;
+
+                videoStarted = true;
+
+            // 動画を再生
+            iframe.contentWindow.postMessage(
+                JSON.stringify({
+                    event: "command",
+                    func: "playVideo",
+                    args: []
+                }),
+                "*"
+            );
+
+            }, { once: true });
+
+        });
+
+        // スピーカーボタンのクリック処理
+        audioButton.addEventListener('click', (e) => {
+
+            // 動画が始まるまでは反応させない
+            if (!videoStarted) {
+                e.stopPropagation();
+                return;
+            }
+
+            e.stopPropagation();
+
+            // 効果音を再生
+            clickSound.currentTime = 0;
+            clickSound.play();
+
+            if (isMuted) {
+
+                // ミュート解除
                 iframe.contentWindow.postMessage(
                     JSON.stringify({
                         event: "command",
-                        func: "playVideo",
+                        func: "unMute",
                         args: []
                     }),
                     "*"
                 );
-            }, { once: true });
+
+                audioButton.src = "img/audio/speaker.svg";
+
+            } else {
+
+                // ミュート
+                iframe.contentWindow.postMessage(
+                    JSON.stringify({
+                        event: "command",
+                        func: "mute",
+                        args: []
+                    }),
+                    "*"
+                );
+
+                audioButton.src = "img/audio/mute.svg";
+            }
+
+            isMuted = !isMuted;
+
         });
     }
 
@@ -199,3 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { isScrolling = false; }, 100);
     }
 });
+
+function mute(){
+    const iframe = document.getElementById('bg-iframe');
+    
+}
